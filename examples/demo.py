@@ -1,10 +1,10 @@
-"""Using the ff3_1 library: tokenize card numbers so they still look like card numbers.
+"""Using the ff1 library: tokenize card numbers so they still look like card numbers.
 
 Install the package first (pip install .), then:  python examples/demo.py
 """
 import os
 
-from ff3_1 import FF3_1
+from ff1 import FF1
 
 
 def luhn_check_digit(digits):
@@ -42,28 +42,28 @@ def detokenize_card(cipher, token, tweak):
 def main():
     # In production the key comes from a KMS/HSM, never from code or a PIN.
     key = os.urandom(16)
-    cipher = FF3_1(key)  # radix 10 by default
+    cipher = FF1(key)  # radix 10 by default
 
     # 1. Plain digit strings: output has the same length and alphabet.
-    tweak = bytes.fromhex("D8E7920AFA330A")
+    tweak = b"cards-table"  # any bytes; optional, defaults to empty
     ct = cipher.encrypt("4088498645809206", tweak)
     print("digits     ", "4088498645809206", "->", ct, "->", cipher.decrypt(ct, tweak))
 
     # 2. Card tokenization preserving issuer prefix and Luhn validity.
-    #    Using a per-record tweak (e.g. derived from a customer id) means equal
-    #    card numbers in different records encrypt differently.
+    #    Using a per-record tweak (e.g. the customer id) means equal card numbers
+    #    in different records encrypt differently.
     card = "4111111111111111"
-    for customer_tweak in ("00000000000001", "00000000000002"):
+    for customer_tweak in (b"customer-1", b"customer-2"):
         token = tokenize_card(cipher, card, customer_tweak)
         back = detokenize_card(cipher, token, customer_tweak)
         print(f"card       {card} -> {token} (luhn ok: {is_luhn_valid(token)}) -> {back}")
 
     # 3. Other alphabets: radix 36 IDs and a custom lowercase alphabet.
-    ids = FF3_1(key, radix=36)
+    ids = FF1(key, radix=36)
     ct = ids.encrypt("order9z81kq2", tweak)
     print("radix 36   ", "order9z81kq2", "->", ct, "->", ids.decrypt(ct, tweak))
 
-    names = FF3_1(key, alphabet="abcdefghijklmnopqrstuvwxyz")
+    names = FF1(key, alphabet="abcdefghijklmnopqrstuvwxyz")
     ct = names.encrypt("alicesmith", tweak)
     print("lowercase  ", "alicesmith", "->", ct, "->", names.decrypt(ct, tweak))
 

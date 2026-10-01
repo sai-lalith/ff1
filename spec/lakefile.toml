@@ -1,0 +1,9 @@
+name = "ff1spec"
+defaultTargets = ["FF1Spec", "ff1spec"]
+
+[[lean_lib]]
+name = "FF1Spec"
+
+[[lean_exe]]
+name = "ff1spec"
+root = "Main"

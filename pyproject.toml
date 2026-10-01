@@ -1,19 +1,27 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ff3-1"
+name = "ff1"
 version = "0.1.0"
-description = "FF3-1 format-preserving encryption (NIST SP 800-38G Rev. 1)"
+description = "FF1 format-preserving encryption (NIST SP 800-38G Rev. 1), checked against a Lean spec"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "Sai Lalith Kumar"}]
 requires-python = ">=3.9"
 dependencies = ["pycryptodome>=3.10"]
+keywords = ["fpe", "ff1", "format-preserving encryption", "nist", "tokenization"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Security :: Cryptography",
+    "Intended Audience :: Developers",
+]
 
-[project.optional-dependencies]
-test = ["ff3>=1.0.3"]
+[project.urls]
+Homepage = "https://github.com/sai-lalith/ff1"
+Issues = "https://github.com/sai-lalith/ff1/issues"
 
 [tool.setuptools]
-packages = ["ff3_1"]
+packages = ["ff1"]

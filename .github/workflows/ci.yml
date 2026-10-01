@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install .
+      - run: python -m unittest -v
+
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Builds the spec: type-checks the proofs and runs the #guard vector checks.
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: spec
+          leanchecker: true    # re-check the compiled proofs with the standalone kernel checker
+          leanchecker-args: FF1Spec
+          axiom-audit: true    # fail on sorry or any axiom beyond propext/choice/Quot.sound
+          axiom-audit-root: FF1Spec
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install .
+      - name: Differential test against the Lean spec
+        run: python -m unittest -v tests.test_lean
