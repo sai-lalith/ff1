@@ -4,19 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ff1-fpe"
-version = "0.1.0"
-description = "FF1 format-preserving encryption (NIST SP 800-38G Rev. 1), checked against a Lean spec"
+version = "0.2.0"
+description = "FF1 format-preserving encryption (NIST SP 800-38G Rev. 1) with a Lean spec: a research project"
 readme = "README.md"
-license = "MIT"
-license-files = ["LICENSE"]
 authors = [{name = "Sai Lalith Kumar"}]
 requires-python = ">=3.9"
 dependencies = ["pycryptodome>=3.10"]
 keywords = ["fpe", "ff1", "format-preserving encryption", "nist", "tokenization"]
 classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
     "Topic :: Security :: Cryptography",
-    "Intended Audience :: Developers",
 ]
 
 [project.urls]

@@ -20,6 +20,22 @@ class SpecSteps(unittest.TestCase):
         y = FF1(KEY)._round(self.P, bytes(12), 0, 56789, 3, 8)
         self.assertEqual(y, 14103068008476060536)
 
+    def test_round_function_matches_reference(self):
+        # The optimized round function must equal the direct transcription of steps 6.i-6.iv,
+        # including halves spanning several blocks (b > 15) and outputs needing d > 16.
+        rng = random.Random(7)
+        alphabets = ["".join(chr(0x10000 + i) for i in range(r)) for r in (2, 10, 1000, 65536)]
+        ciphers = [FF1(rng.randbytes(16), alphabet=a) for a in alphabets for _ in range(3)]
+        for _ in range(300):
+            c = rng.choice(ciphers)
+            n = rng.randint(c.minlen, 120)
+            tweak = rng.randbytes(rng.choice([0, 5, 16, 40, 100]))
+            u, v, blen, d, p, q_prefix = c._setup(n, tweak)
+            fast = c._round_function(p + q_prefix, blen, d)
+            for i in range(10):
+                x = rng.randrange(c.radix ** v)
+                self.assertEqual(fast(i, x), c._round(p, q_prefix, i, x, blen, d))
+
     def test_length_limits(self):
         c = FF1(KEY)
         self.assertEqual(c.minlen, 6)

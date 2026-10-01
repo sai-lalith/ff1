@@ -5,8 +5,11 @@
 Ciphertext keeps the plaintext's length and alphabet: a 16-digit number encrypts to a
 16-digit number.
 
+> **This is a research project.** It explores combining a Lean 4 specification with
+> differential testing. It is not intended for production use or for protecting real data.
+
 ```sh
-pip install ff1-fpe
+pip install git+https://github.com/sai-lalith/ff1
 ```
 
 ```python
@@ -36,6 +39,9 @@ Luhn checksum. Run `pip install .` first.
   machine-checked proofs that, for any block cipher:
   - FF1 is format-preserving.
   - Decryption inverts encryption, and vice versa.
+  - **Domain separation:** every round's PRF input is a whole number of AES blocks,
+    and two inputs are equal only if the radix, length, tweak, round and half are
+    all equal. This is the property Beyne's attack broke in FF3-1.
 
   `lake build` also checks the spec's own AES against FIPS 197 and the spec itself
   against the NIST samples.
@@ -53,8 +59,17 @@ python -m unittest                       # Lean tests are skipped unless the spe
 - **Audit:** this code is not audited, and it is not constant-time (pure Python
   integer arithmetic).
 - **Integrity:** FPE provides confidentiality only, with no integrity protection.
-- **Proof scope:** the proofs cover correctness, not security.
+- **Proof scope:** the proofs cover correctness and domain separation. They do not
+  prove that FF1 is secure; that is a probabilistic reduction to AES, which is
+  published for FF1 but not formalized here.
 - **FF3/FF3-1:** these are deliberately not included. NIST removed them after
   Beyne's attack.
 
-MIT licensed. This project grew out of a CSD451 course project; see the git history.
+## Performance
+
+Each call computes the round-independent part of the PRF input once, and caches it
+across calls with the same tweak and length. Each round then costs about one AES call.
+Encrypting a 16-digit card number takes roughly 65–95 µs, about 2–2.5× faster than
+0.1.0. Run `python benchmarks/bench.py` to measure on your machine.
+
+This project grew out of a CSD451 course project; see the git history.
