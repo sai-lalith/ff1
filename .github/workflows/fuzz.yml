@@ -1,0 +1,31 @@
+name: Extended differential test
+
+# 200,000 random cases against the Lean spec with a fresh seed each run.
+# A failure message includes FF1_DIFF_SEED to reproduce it locally.
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      cases:
+        description: Number of random cases
+        default: "200000"
+
+jobs:
+  differential:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: spec
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install .
+      - name: Differential test against the Lean spec
+        run: python -m unittest -v tests.test_lean.MatchesLeanSpec.test_random_inputs
+        env:
+          FF1_DIFF_CASES: ${{ inputs.cases || '200000' }}
+          FF1_DIFF_SEED: ${{ github.run_id }}
