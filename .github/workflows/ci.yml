@@ -37,3 +37,5 @@ jobs:
       - run: pip install .
       - name: Differential test against the Lean spec
         run: python -m unittest -v tests.test_lean
+        env:
+          FF1_DIFF_CASES: "20000"

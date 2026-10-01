@@ -40,7 +40,8 @@ Luhn checksum. Run `pip install .` first.
   `lake build` also checks the spec's own AES against FIPS 197 and the spec itself
   against the NIST samples.
 - **Differential testing:** `tests/test_lean.py` checks the Python against the Lean spec
-  on 2,000 random inputs (radix up to 2^16) and runs the ACVP vectors through the spec.
+  on random inputs (20,000 per PR and 200,000 weekly) with radix up to 2^16 and
+  edge-biased lengths and tweaks. It also runs the ACVP vectors through the spec.
 
 ```sh
 python -m unittest                       # Lean tests are skipped unless the spec is built
