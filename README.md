@@ -91,15 +91,13 @@ The tests check the implementation in several independent ways:
 
 ## Origin
 
-This repo started as **Credit-Card-FPE**, a credit-card processing demo (socket
-client/server) built on a hand-written FF3-1 for the CSD451 course project. That code,
-along with the project report and the NIST draft, is kept unchanged in
-[`archive/`](archive/). The rest of the coursework is in
-[Crypto-Course-Work](https://github.com/sai-lalith/Crypto-Course-Work).
-
-The archived cipher (`archive/ff3_1.py`) round-tripped correctly but did not match the
-standard, because of three spec deviations: a 192-bit numeral block, PKCS7 padding
-before AES, and an un-zeroed tweak nibble in T_L. The library here is a rewrite.
+This repo started as **Credit-Card-FPE**, a credit-card processing demo built on a
+hand-written FF3-1 for the CSD451 course project. That code is in this repo's git
+history, and the rest of the coursework is in
+[Crypto-Course-Work](https://github.com/sai-lalith/Crypto-Course-Work). The original
+cipher round-tripped correctly but did not match the standard, because of three spec
+deviations: a 192-bit numeral block, PKCS7 padding before AES, and an un-zeroed tweak
+nibble in T_L. The library here is a rewrite.
 
 ## License
 
