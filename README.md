@@ -6,7 +6,7 @@ Ciphertext keeps the plaintext's length and alphabet: a 16-digit number encrypts
 16-digit number.
 
 ```sh
-pip install ff1
+pip install ff1-fpe
 ```
 
 ```python
