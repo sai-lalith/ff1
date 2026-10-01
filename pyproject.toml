@@ -3,7 +3,7 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ff1"
+name = "ff1-fpe"
 version = "0.1.0"
 description = "FF1 format-preserving encryption (NIST SP 800-38G Rev. 1), checked against a Lean spec"
 readme = "README.md"
