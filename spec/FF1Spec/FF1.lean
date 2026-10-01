@@ -62,18 +62,28 @@ def prf (ciph : Cipher) (X : Bytes) : Bytes :=
 def roundLen (u v i : Nat) : Nat :=
   if i % 2 = 0 then u else v
 
+/-- Step 3: b, the byte length of NUM_radix of a half of length v. -/
+def byteLen (radix v : Nat) : Nat :=
+  (bitlen (radix ^ v - 1) + 7) / 8
+
+/-- Step 5: the fixed block P. -/
+def blockP (radix n t : Nat) : Bytes :=
+  [1, 2, 1] ++ bytesOf 3 radix ++ [10, (n / 2 % 256).toUInt8] ++ bytesOf 4 n ++ bytesOf 4 t
+
+/-- Step 6.i: Q for round i, from the half X that the round leaves unchanged. -/
+def blockQ (radix : Nat) (T : Bytes) (n i : Nat) (X : List Nat) : Bytes :=
+  let b := byteLen radix (n - n / 2)
+  T ++ List.replicate ((16 - (T.length + b + 1) % 16) % 16) 0 ++ [i.toUInt8] ++ bytesOf b (num radix X)
+
+/-- The PRF input P || Q of step 6.ii. -/
+def roundInput (radix : Nat) (T : Bytes) (n i : Nat) (X : List Nat) : Bytes :=
+  blockP radix n T.length ++ blockQ radix T n i X
+
 /-- Steps 3-6.iv: y for round i, computed from the half that the round leaves unchanged. -/
 def roundValue (ciph : Cipher) (radix : Nat) (T : Bytes) (n : Nat) (i : Nat) (X : List Nat) : Nat :=
-  let u := n / 2
-  let v := n - u
-  let t := T.length
-  let b := (bitlen (radix ^ v - 1) + 7) / 8                       -- step 3
+  let b := byteLen radix (n - n / 2)                               -- step 3
   let d := 4 * ((b + 3) / 4) + 4                                  -- step 4
-  let P : Bytes := [1, 2, 1] ++ bytesOf 3 radix ++ [10, (u % 256).toUInt8]
-    ++ bytesOf 4 n ++ bytesOf 4 t                                  -- step 5
-  let Q := T ++ List.replicate ((16 - (t + b + 1) % 16) % 16) 0
-    ++ [i.toUInt8] ++ bytesOf b (num radix X)                      -- step 6.i
-  let R := prf ciph (P ++ Q)                                       -- step 6.ii
+  let R := prf ciph (roundInput radix T n i X)                     -- steps 5, 6.i, 6.ii
   let S := (R ++ ((List.range ((d + 15) / 16)).drop 1).flatMap
     (fun j => ciph (xorBytes R (bytesOf 16 j)))).take d            -- step 6.iii
   numBytes S                                                       -- step 6.iv
